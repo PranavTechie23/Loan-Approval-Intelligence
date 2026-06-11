@@ -1,0 +1,10 @@
+node_modules/
+**/node_modules/
+.env
+dist/
+build/
+__pycache__/
+*.pyc
+dataset/
+uploads/
+cleaned.csv
