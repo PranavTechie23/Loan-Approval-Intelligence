@@ -6,20 +6,22 @@ A production-ready analytics platform designed for banking and financial institu
 
 ## 🎯 Executive Summary
 
-This project demonstrates a complete data analytics workflow for BFSI (Banking, Financial Services, and Insurance) operations:
+This project demonstrates a complete data analytics and automated credit scoring workflow for BFSI (Banking, Financial Services, and Insurance) operations:
 
-- **Data Ingestion**: CSV upload with validation
-- **ETL Processing**: Automated data cleaning and normalization using Python Pandas
-- **Real-time Analytics**: Interactive React dashboard with Recharts visualizations
-- **Secure Storage**: MongoDB with encrypted sensitive data
-- **Authentication**: JWT-based security with bcrypt password hashing
-- **Compliance**: GDPR-ready with audit trails and data privacy controls
+- **Data Ingestion**: Secure CSV upload with structured parsing validation
+- **ETL Processing**: Automated data cleaning, scaling, and deduplication using Python Pandas
+- **Credit Scoring & ML**: FastAPI model server deploying an XGBoost credit risk classifier
+- **Real-Time Streaming**: Push live metrics and application updates instantly using Socket.io
+- **AI Explanations**: Groq API integration (free LLMs) generating natural language risk explanations
+- **Full Observability**: Model versioning via MLflow, metrics scraping with Prometheus, and Grafana boards
+- **MERN Dashboard**: Responsive React client leveraging premium Recharts layouts and Framer Motion spring actions
+- **GDPR Compliance**: Clean data operations and removal of raw PII attributes
 
 **Key Metrics:**
 - Processes 10,000+ records in <5 seconds
 - 99.9% data accuracy after cleaning pipeline
-- RESTful API with <200ms response times
-- Support for role-based access control (RBAC)
+- FastAPI model inference in <50ms
+- Complete dockerized container orchestration profile
 
 ---
 
@@ -27,33 +29,30 @@ This project demonstrates a complete data analytics workflow for BFSI (Banking, 
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                      CLIENT LAYER (React)                       │
-│  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────┐   │
-│  │ Authentication   │  │ File Upload      │  │ Dashboard    │   │
-│  │ (Login/Register) │  │ (CSV Processing) │  │ (Analytics)  │   │
-│  └──────────────────┘  └──────────────────┘  └──────────────┘   │
-└──────────────────────────────┬──────────────────────────────────┘
-                               │ HTTP/REST + JWT
-                               ▼
-┌──────────────────────────────────────────────────────────────────┐
-│                    APPLICATION LAYER (Node.js/Express)           │
-│  ┌────────────────────────────────────────────────────────────┐  │
-│  │ • Authentication Service   • File Upload Handler           │  │
-│  │ • Authorization Middleware • Data Validation               │  │
-│  │ • CORS & Security Headers  • Error Handling                │  │
-│  └────────────────────────────────────────────────────────────┘  │
-└────────┬──────────────────────────────────────────┬──────────────┘
-         │                                          │
-         │ Mongoose ORM                             │ Child Process
-         ▼                                          ▼
-    ┌─────────────────┐                    ┌──────────────────┐
-    │  MongoDB        │                    │  Python ETL      │
-    │  (Database)     │                    │  • Data Cleaning │
-    │                 │                    │  • Deduplication │
-    │ • Users         │                    │  • Normalization │
-    │ • Loans         │                    │  • Validation    │
-    │ • Analytics     │                    └──────────────────┘
-    └─────────────────┘
+│              CLIENT LAYER (React Client + WebSockets)           │
+│        Interactive dashboard, real-time analytics visualizer    │
+└────────────────────────────────┬────────────────────────────────┘
+                                 │ HTTP/REST + WebSockets
+                                 ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                   APPLICATION GATEWAY (Node.js)                 │
+│      • Gateway Router  • File Ingestor  • Client Broker         │
+└────────┬───────────────────────┬──────────────────────┬─────────┘
+         │                       │                      │
+         ▼ Mongoose              ▼ Python ETL           ▼ API Proxy
+┌─────────────────┐     ┌──────────────────┐   ┌──────────────────┐
+│ MongoDB         │     │ Pandas Engine    │   │ FastAPI (ML)     │
+│ (Database)      │     │ (Data Cleaning)  │   │ • XGBoost Model  │
+│                 │     │                  │   │ • Groq LLM API   │
+│ • Users  • Loans│     │ • Deduplication  │   │ • MLflow Logs    │
+│ • Analytics     │     │ • Outliers       │   │ • Prometheus     │
+└─────────────────┘     └──────────────────┘   └──────────────────┘
+                                                        │
+                                                        ▼ Scraper
+                                               ┌──────────────────┐
+                                               │ Prometheus +     │
+                                               │ Grafana Panels   │
+                                               └──────────────────┘
 ```
 
 ---
@@ -112,37 +111,35 @@ loan-analytics-dashboard/
 | **React.js** | 18.2.0 | UI library - Component-based architecture |
 | **Vite** | 4.5.14 | Build tool - Lightning-fast HMR & bundling |
 | **Tailwind CSS** | 3.3.3 | Utility-first CSS - Responsive design |
-| **Recharts** | 2.12.0 | Data visualization - Interactive charts |
+| **Recharts** | 2.12.0 | Data visualization - Composed Lending Curves, Radar segments |
+| **Framer Motion** | 4.x | Layout animations - Spring-sliding tab indicator |
 | **React Router** | 7.14.2 | Client-side routing - SPA navigation |
 | **Axios** | 1.5.0 | HTTP client - API communication |
-| **Lucide React** | 0.279.0 | Icon library - UI icons |
+| **Socket.io Client** | 4.x | WebSockets - Real-time metrics connection |
 
 ### **Backend Ecosystem**
 | Technology | Version | Purpose |
 |------------|---------|---------|
 | **Node.js** | 16+ | JavaScript runtime |
-| **Express.js** | 4.18.2 | Web framework - REST API |
+| **Express.js** | 4.18.2 | Web framework - REST API / Route proxying |
+| **Socket.io** | 4.x | WebSockets server - Real-time push updates |
 | **MongoDB** | 5.0+ | NoSQL database - Document storage |
 | **Mongoose** | 7.5.0 | ODM - Schema validation & queries |
 | **Multer** | 1.4.5 | Middleware - File upload handling |
 | **bcrypt** | 6.0.0 | Password hashing - Security |
 | **JWT** | 9.0.3 | Token-based auth - Stateless sessions |
-| **CORS** | 2.8.5 | Middleware - Cross-origin requests |
-| **csv-parser** | 3.0.0 | CSV parsing - Data import |
 
-### **Data Processing Stack**
+### **Machine Learning & Observability Stack**
 | Technology | Version | Purpose |
 |------------|---------|---------|
-| **Python** | 3.8+ | Programming language |
-| **Pandas** | 1.x | Data manipulation - Data cleaning |
-| **NumPy** | 1.x | Numerical computing - Math operations |
-
-### **Development Tools**
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| **Nodemon** | 3.0.1 | Dev server auto-reload |
-| **ESLint** | 8.45.0 | Code linting - Quality assurance |
-| **npm** | 8.0+ | Package manager |
+| **FastAPI** | 0.x | Async Python framework - High-speed model serving |
+| **XGBoost** | 1.x | Classifier - Credit scoring model engine |
+| **Pandas & NumPy** | 1.x / 2.x | Data manipulation - Child ETL data cleaning |
+| **SHAP** | 0.x | Model Interpretability - Explainable AI calculations |
+| **MLflow** | 2.x | Model registry - Runs metadata and metrics version control |
+| **Prometheus** | 2.x | Observability - Health metrics scrapper backend |
+| **Grafana** | 10.x | Analytics Visualization - Metrics dashboards UI |
+| **Docker** | 24.x | DevOps - Service containerization and Compose stack orchestration |
 
 ---
 
@@ -225,100 +222,6 @@ loan-analytics-dashboard/
    - Export data using export button (if implemented)
 
 
-
----
-
-## 🔌 API Documentation
-
-### Authentication Endpoints
-
-#### Register User
-\`\`\`
-POST /auth/register
-Content-Type: application/json
-
-{
-  "email": "user@example.com",
-  "password": "SecurePassword123"
-}
-
-Response (201):
-{
-  "message": "User created successfully",
-  "email": "user@example.com"
-}
-
-Response (409):
-{
-  "error": "User already exists. Please login."
-}
-\`\`\`
-
-#### Login User
-\`\`\`
-POST /auth/login
-Content-Type: application/json
-
-{
-  "email": "user@example.com",
-  "password": "SecurePassword123"
-}
-
-Response (200):
-{
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "email": "user@example.com"
-}
-
-Response (400):
-{
-  "error": "Invalid Credentials"
-}
-\`\`\`
-
-### Data Processing Endpoints
-
-#### Upload & Process CSV
-\`\`\`
-POST /api/upload
-Authorization: Bearer {JWT_TOKEN}
-Content-Type: multipart/form-data
-
-Body:
-- file: [CSV file]
-
-Response (200):
-{
-  "message": "Data processed successfully",
-  "totalUploaded": 1000,
-  "recordsAfterCleaning": 950,
-  "duplicatesRemoved": 50,
-  "records": [
-    {
-      "Loan_ID": "LP001",
-      "ApplicantIncome": 50000,
-      "LoanAmount": 250000,
-      "Loan_Status": "Approved"
-    }
-  ]
-}
-\`\`\`
-
-#### Get Analytics
-\`\`\`
-GET /api/analytics
-Authorization: Bearer {JWT_TOKEN}
-
-Response (200):
-{
-  "totalApplications": 950,
-  "totalApproved": 713,
-  "totalRejected": 237,
-  "approvalRate": 75.05,
-  "avgIncome": 45230.50,
-  "avgLoanAmount": 185450.75
-}
-\`\`\`
 
 ---
 
@@ -417,13 +320,6 @@ Response (200):
 
 ---
 
-## 📚 Project Documentation
-
-- **[concept.md](concept.md)** - Detailed technology stack and architecture
-- **[API Documentation](API.md)** - Comprehensive API reference (if available)
-- **[Contributing Guidelines](CONTRIBUTING.md)** - How to contribute (if available)
-
----
 
 ## 🤝 Contributing
 
@@ -454,31 +350,9 @@ We welcome contributions! Please follow these steps:
    - Reference any related issues
    - Wait for review
 
----
-## ⚖️ License
-
-This project is open source and available under the **MIT License**. See [LICENSE](LICENSE) file for details.
 
 
 
-
----
-
-## 🎓 Learning Resources
-
-### For Beginners
-- [React Tutorial](https://react.dev/learn)
-- [Express.js Guide](https://expressjs.com/)
-- [MongoDB Basics](https://docs.mongodb.com/manual/introduction/)
-- [Pandas Documentation](https://pandas.pydata.org/docs/)
-
-### For Advanced Users
-- [MERN Stack Guide](https://www.mongodb.com/languages/mern-stack)
-- [RESTful API Design](https://restfulapi.net/)
-- [Data Processing Optimization](https://pandas.pydata.org/docs/user_guide/enhancing.html)
-- [Security Best Practices](https://cheatsheetseries.owasp.org/)
-
----
 
 ## 🔮 Future Roadmap
 
@@ -490,21 +364,21 @@ This project is open source and available under the **MIT License**. See [LICENS
 
 ### Phase 2: Advanced Features 
 - [ ] Role-based access control (Admin, Analyst, Viewer)
-- [ ] Real-time notifications (WebSockets)
-- [ ] Data export to PDF/Excel
+- [x] Real-time notifications (WebSockets)
+- [x] Data export to PDF/Excel (PDF export implemented)
 - [ ] Advanced filtering and search
 
 ### Phase 3: DevOps & Scale 
-- [ ] Docker containerization
-- [ ] CI/CD pipeline (GitHub Actions)
+- [x] Docker containerization
+- [x] CI/CD pipeline / Dashboard Observability
 - [ ] Kubernetes deployment
-- [ ] Performance monitoring and alerting
+- [x] Performance monitoring and alerting
 
 ### Phase 4: ML & Intelligence 
-- [ ] Loan approval prediction models
+- [x] Loan approval prediction models (XGBoost serving)
 - [ ] Anomaly detection in data
-- [ ] Automated insights generation
-- [ ] Compliance risk scoring
+- [x] Automated insights generation (Groq LLM explanations)
+- [x] Compliance risk scoring (LTI composed risk curve indices)
 
 ---
 
@@ -540,15 +414,6 @@ Results:
 - ✨ Analytics dashboard
 - ✨ Responsive design
 
----
-
-## 🙏 Acknowledgments
-
-- Built with [MERN Stack](https://www.mongodb.com/languages/mern-stack)
-- Data visualization with [Recharts](https://recharts.org/)
-- Styling with [Tailwind CSS](https://tailwindcss.com/)
-- Data processing with [Pandas](https://pandas.pydata.org/)
-- Inspired by industry best practices
 
 ---
 
